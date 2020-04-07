@@ -72,7 +72,7 @@ func mapSlice(fn, col reflect.Value) reflect.Value {
 	return ret
 }
 
-func mapWorker(fn reflect.Value, job chan []reflect.Value, res reflect.Value) {
+func mapWorker(fn reflect.Value, job <-chan []reflect.Value, res reflect.Value) {
 	for {
 		v, ok := <-job
 		if !ok {
@@ -125,14 +125,14 @@ func mapPImpl(values []reflect.Value) []reflect.Value {
 	return []reflect.Value{ret}
 }
 
-func mapPSlice(job chan []reflect.Value, col reflect.Value) {
+func mapPSlice(job chan<- []reflect.Value, col reflect.Value) {
 	for i := 0; i < col.Len(); i++ {
 		e := col.Index(i)
 		job <- []reflect.Value{e}
 	}
 }
 
-func mapPMap(job chan []reflect.Value, col reflect.Value) {
+func mapPMap(job chan<- []reflect.Value, col reflect.Value) {
 	for _, k := range col.MapKeys() {
 		v := col.MapIndex(k)
 		job <- []reflect.Value{v, k}
